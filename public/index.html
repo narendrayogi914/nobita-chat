@@ -14,20 +14,35 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        $(function () {
-            var socket = io();
+   <script>
+    $(function () {
+        var socket = io();
 
-            $('form').submit(function(){
-                socket.emit('chat message', $('#m').val());
-                $('#m').val('');
-                return false;
-            });
+        // Prompt the user for a username
+        var username = prompt("Enter your username:");
 
-            socket.on('chat message', function(msg){
-                $('#messages').append($('<li>').text(msg));
+        // Prompt the user for a room name
+        var room = prompt("Enter room name:");
+
+        socket.emit('join', username, room);
+
+        $('form').submit(function(){
+            socket.emit('chat message', $('#m').val());
+            $('#m').val('');
+            return false;
+        });
+
+        socket.on('chat message', function(msg){
+            $('#messages').append($('<li>').text(`${msg.user}: ${msg.message}`));
+        });
+
+        socket.on('users', function(users){
+            $('#user-list').html('');
+            users.forEach(user => {
+                $('#user-list').append($('<li>').text(user));
             });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
